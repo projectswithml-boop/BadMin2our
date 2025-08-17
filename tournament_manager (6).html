@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BadMinTon Monthly Tournament</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dc2626 0%, #fbbf24 50%, #dc2626 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #dc2626;
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .admin-section {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-login {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .admin-controls {
+            display: none;
+        }
+
+        .admin-controls.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .admin-section .form-group label {
+            color: white;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #dc2626;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+        }
+
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .team-card {
+            background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .standings-table th {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .standings-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .standings-table tr:hover {
+            background: #fef3c7;
+        }
+
+        .knockout-table th {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #dc2626;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #dc2626;
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .vs-text {
+            font-weight: bold;
+            color: #dc2626;
+            margin: 0 15px;
+        }
+
+        .score-input {
+            width: 80px;
+            text-align: center;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .group-section {
+            margin-bottom: 40px;
+        }
+
+        .group-title {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .knockout-title {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #dc2626;
+        }
+
+        .final-title {
+            background: linear-gradient(45deg, #dc2626 0%, #fbbf24 50%, #dc2626 100%);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes shuttle-float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(90deg); }
+            50% { transform: translateY(0px) rotate(180deg); }
+            75% { transform: translateY(-5px) rotate(270deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        @keyframes racket-swing {
+            0% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+            100% { transform: rotate(-15deg); }
+        }
+
+        .floating-shuttle {
+            position: fixed;
+            font-size: 24px;
+            color: white;
+            pointer-events: none;
+            z-index: 10;
+            animation: shuttle-float 4s ease-in-out infinite;
+        }
+
+        .floating-racket {
+            position: fixed;
+            font-size: 28px;
+            color: white;
+            pointer-events: none;
+            z-index: 10;
+            animation: racket-swing 3s ease-in-out infinite;
+        }
+
+        .shuttle1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .shuttle2 { top: 20%; right: 10%; animation-delay: 1s; }
+        .shuttle3 { bottom: 30%; left: 8%; animation-delay: 2s; }
+        .racket1 { top: 40%; right: 5%; animation-delay: 0.5s; }
+        .racket2 { bottom: 10%; right: 15%; animation-delay: 1.5s; }
+
+        .winner-tree-map {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .winner-path {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .winner-stage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 15px 0;
+        }
+
+        .winner-team {
+            background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+            border: 3px solid #dc2626;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-weight: bold;
+            min-width: 150px;
+            position: relative;
+        }
+
+        .winner-team.champion {
+            background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+            color: white;
+            font-size: 1.3em;
+            border: 3px solid #fbbf24;
+            animation: champion-glow 2s ease-in-out infinite;
+        }
+
+        .winner-team.finalist {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #dc2626;
+            border: 3px solid #dc2626;
+        }
+
+        .winner-team.semifinalist {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+            border: 2px solid #dc2626;
+        }
+
+        @keyframes champion-glow {
+            0% { box-shadow: 0 0 10px rgba(220, 38, 38, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(251, 191, 36, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(220, 38, 38, 0.5); }
+        }
+
+        .stage-arrow {
+            font-size: 2em;
+            color: #dc2626;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 40px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer p {
+            color: white;
+            font-size: 1em;
+            margin: 0;
+        }
+
+        .winner-highlight {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .progress-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .tree-level {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .tree-team {
+            background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            padding: 10px 15px;
+            text-align: center;
+            min-width: 120px;
+            font-weight: 600;
+        }
+
+        .tree-winner {
+            background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%);
+            color: white;
+        }
+
+        .tree-champion {
+            background: linear-gradient(45deg, #dc2626 0%, #fbbf24 50%, #dc2626 100%);
+            color: white;
+            font-size: 1.2em;
+            animation: pulse 2s infinite;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: 300px;
+            position: relative;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-tab {
+                width: 200px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏸 BadMinTon Monthly Tournament 🏆</h1>
+            <p>Real-time standings, fixtures, and analytics</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('setup')">🔧 Setup Tournament</button>
+            <button class="nav-tab" onclick="showTab('teams')">👥 Manage Teams</button>
+            <button class="nav-tab" onclick="showTab('fixtures')">📅 Fixtures</button>
+            <button class="nav-tab" onclick="showTab('results')">⚡ Update Results</button>
+            <button class="nav-tab" onclick="showTab('standings')">📊 Standings</button>
+            <button class="nav-tab" onclick="showTab('dashboard')">🎯 Dashboard</button>
+        </div>
+
+        <!-- Setup Tournament Tab -->
+        <div id="setup" class="tab-content active">
+            <div class="admin-section">
+                <h3>🔐 Admin Access Required</h3>
+                <div class="admin-login">
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" style="flex: 1; margin-right: 10px;">
+                    <button class="btn btn-success" onclick="adminLogin()">Login</button>
+                </div>
+                <div id="adminControls" class="admin-controls">
+                    <h2>Setup New Tournament</h2>
+                    <div class="form-group">
+                        <label for="tournamentName">Tournament Name:</label>
+                        <input type="text" id="tournamentName" placeholder="e.g., 4th Monthly Championship">
+                    </div>
+                    <div class="form-group">
+                        <label for="tournamentType">Tournament Type:</label>
+                        <select id="tournamentType">
+                            <option value="group">Group Stage + Knockout</option>
+                            <option value="knockout">Direct Knockout</option>
+                            <option value="round-robin">Round Robin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="numGroups">Number of Groups:</label>
+                        <select id="numGroups">
+                            <option value="2">2 Groups</option>
+                            <option value="1">1 Group</option>
+                            <option value="4">4 Groups</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="setupTournament()">Create Tournament</button>
+                    <button class="btn btn-danger" onclick="clearTournament()">Clear Tournament</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Teams Tab -->
+        <div id="teams" class="tab-content">
+            <h2>👥 Manage Teams</h2>
+            <div class="form-group">
+                <label for="teamName">🏸 Team Name:</label>
+                <input type="text" id="teamName" placeholder="e.g., Rahul - Suresh">
+            </div>
+            <div class="form-group">
+                <label for="groupSelect">🏆 Assign to Group:</label>
+                <select id="groupSelect">
+                    <option value="A">Group A</option>
+                    <option value="B">Group B</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="addTeam()">➕ Add Team</button>
+            <button class="btn btn-danger" onclick="clearAllTeams()">🗑️ Clear All Teams</button>
+            
+            <div id="teamsDisplay" class="teams-grid"></div>
+        </div>
+
+        <!-- Fixtures Tab -->
+        <div id="fixtures" class="tab-content">
+            <h2>📅 Tournament Fixtures</h2>
+            <button class="btn btn-success" onclick="generateFixtures()">🎯 Generate Fixtures</button>
+            <div id="fixturesDisplay"></div>
+        </div>
+
+        <!-- Update Results Tab -->
+        <div id="results" class="tab-content">
+            <h2>⚡ Update Match Results</h2>
+            <div id="matchesForUpdate"></div>
+            <div id="progressTree" class="progress-tree" style="display: none;">
+                <h3 style="color: #dc2626; margin-bottom: 20px;">🏆 Tournament Progress Tree</h3>
+                <div id="treeContent"></div>
+            </div>
+        </div>
+
+        <!-- Standings Tab -->
+        <div id="standings" class="tab-content">
+            <h2>📊 Current Standings</h2>
+            <div id="standingsDisplay"></div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <h2>🎯 Tournament Dashboard</h2>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3 id="totalTeams">0</h3>
+                    <p>👥 Total Teams</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalMatches">0</h3>
+                    <p>🏸 Total Matches</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="completedMatches">0</h3>
+                    <p>✅ Completed</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="pendingMatches">0</h3>
+                    <p>⏳ Pending</p>
+                </div>
+            </div>
+            
+            <div id="winnerTreeMap" class="winner-tree-map">
+                <h3 style="color: #dc2626; margin-bottom: 20px;">🏆 Tournament Winners Path</h3>
+                <div id="winnerTreeContent"></div>
+            </div>
+            
+            <div id="dashboardContent"></div>
+        </div>
+
+        <!-- Floating Animations -->
+        <div class="floating-shuttle shuttle1">🏸</div>
+        <div class="floating-shuttle shuttle2">🏸</div>
+        <div class="floating-shuttle shuttle3">🏸</div>
+        <div class="floating-racket racket1">🎾</div>
+        <div class="floating-racket racket2">🎾</div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>💻 Managed and Created by <strong>Dinesh Babu Jothilingam</strong> | 📅 August 2025 | 🏸 BadMinTon Tournament System</p>
+        </div>
+    </div>
+
+    <script>
+        // Global tournament data with localStorage persistence
+        let tournament = JSON.parse(localStorage.getItem('tournament')) || {
+            name: '',
+            type: 'group',
+            groups: {},
+            matches: [],
+            teams: [],
+            standings: {},
+            isAdmin: false
+        };
+
+        // Admin password
+        const ADMIN_PASSWORD = 'karnataka2024';
+
+        // Save tournament data to localStorage
+        function saveTournament() {
+            localStorage.setItem('tournament', JSON.stringify(tournament));
+        }
+
+        // Load tournament data on page load
+        function loadTournament() {
+            const saved = localStorage.getItem('tournament');
+            if (saved) {
+                tournament = JSON.parse(saved);
+                updateDashboard();
+                displayTeams();
+                displayFixtures();
+                updateStandings();
+            }
+        }
+
+        function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                tournament.isAdmin = true;
+                document.getElementById('adminControls').classList.add('show');
+                showNotification('Admin access granted!', 'success');
+                saveTournament();
+            } else {
+                showNotification('Invalid admin password!', 'error');
+            }
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabId === 'standings') {
+                updateStandings();
+            } else if (tabId === 'dashboard') {
+                updateDashboard();
+                updateWinnerTreeMap();
+            } else if (tabId === 'results') {
+                displayMatchesForUpdate();
+            } else if (tabId === 'setup' && tournament.isAdmin) {
+                document.getElementById('adminControls').classList.add('show');
+            }
+        }
+
+        function setupTournament() {
+            const name = document.getElementById('tournamentName').value;
+            const type = document.getElementById('tournamentType').value;
+            const numGroups = parseInt(document.getElementById('numGroups').value);
+
+            if (!name) {
+                showNotification('Please enter tournament name', 'error');
+                return;
+            }
+
+            tournament.name = name;
+            tournament.type = type;
+            tournament.groups = {};
+            tournament.teams = [];
+            tournament.matches = [];
+            tournament.standings = {};
+
+            const groupNames = ['A', 'B', 'C', 'D'];
+            for (let i = 0; i < numGroups; i++) {
+                tournament.groups[groupNames[i]] = [];
+            }
+
+            const groupSelect = document.getElementById('groupSelect');
+            groupSelect.innerHTML = '';
+            for (let i = 0; i < numGroups; i++) {
+                const option = document.createElement('option');
+                option.value = groupNames[i];
+                option.textContent = `Group ${groupNames[i]}`;
+                groupSelect.appendChild(option);
+            }
+
+            saveTournament();
+            showNotification(`Tournament "${name}" created successfully!`, 'success');
+        }
+
+        function clearTournament() {
+            if (confirm('Are you sure you want to clear the entire tournament? This cannot be undone.')) {
+                tournament = {
+                    name: '',
+                    type: 'group',
+                    groups: {},
+                    matches: [],
+                    teams: [],
+                    standings: {},
+                    isAdmin: tournament.isAdmin
+                };
+                saveTournament();
+                location.reload();
+            }
+        }
+
+        function addTeam() {
+            const teamName = document.getElementById('teamName').value;
+            const group = document.getElementById('groupSelect').value;
+
+            if (!teamName) {
+                showNotification('Please enter team name', 'error');
+                return;
+            }
+
+            if (!tournament.groups[group]) {
+                showNotification('Please setup tournament first', 'error');
+                return;
+            }
+
+            const team = {
+                name: teamName,
+                group: group,
+                matches: 0,
+                wins: 0,
+                pointsFor: 0,
+                pointsAgainst: 0,
+                average: 0
+            };
+
+            tournament.teams.push(team);
+            tournament.groups[group].push(team);
+
+            document.getElementById('teamName').value = '';
+
+            displayTeams();
+            saveTournament();
+            showNotification(`Team "${teamName}" added to Group ${group}`, 'success');
+        }
+
+        function displayTeams() {
+            const display = document.getElementById('teamsDisplay');
+            display.innerHTML = '';
+
+            Object.keys(tournament.groups).forEach(groupName => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-section';
+                
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'group-title';
+                groupTitle.textContent = `Group ${groupName}`;
+                groupDiv.appendChild(groupTitle);
+
+                tournament.groups[groupName].forEach((team, index) => {
+                    const teamCard = document.createElement('div');
+                    teamCard.className = 'team-card';
+                    teamCard.innerHTML = `
+                        <h3>${team.name}</h3>
+                        <button class="btn btn-danger" onclick="removeTeam('${groupName}', ${index})">Remove</button>
+                    `;
+                    groupDiv.appendChild(teamCard);
+                });
+
+                display.appendChild(groupDiv);
+            });
+        }
+
+        function removeTeam(groupName, index) {
+            const team = tournament.groups[groupName][index];
+            tournament.groups[groupName].splice(index, 1);
+            tournament.teams = tournament.teams.filter(t => t.name !== team.name);
+            displayTeams();
+            saveTournament();
+            showNotification(`Team "${team.name}" removed`, 'success');
+        }
+
+        function clearAllTeams() {
+            if (confirm('Are you sure you want to clear all teams?')) {
+                tournament.teams = [];
+                Object.keys(tournament.groups).forEach(group => {
+                    tournament.groups[group] = [];
+                });
+                tournament.matches = [];
+                displayTeams();
+                saveTournament();
+                showNotification('All teams cleared', 'success');
+            }
+        }
+
+        function generateFixtures() {
+            if (tournament.teams.length === 0) {
+                showNotification('Please add teams first', 'error');
+                return;
+            }
+
+            const hasGroupMatches = tournament.matches.some(match => match.stage === 'group');
+            
+            if (!hasGroupMatches) {
+                let matchId = tournament.matches.length + 1;
+
+                Object.keys(tournament.groups).forEach(groupName => {
+                    const teams = tournament.groups[groupName];
+                    for (let i = 0; i < teams.length; i++) {
+                        for (let j = i + 1; j < teams.length; j++) {
+                            tournament.matches.push({
+                                id: matchId++,
+                                team1: teams[i].name,
+                                team2: teams[j].name,
+                                group: groupName,
+                                stage: 'group',
+                                team1Score: null,
+                                team2Score: null,
+                                completed: false,
+                                winner: null
+                            });
+                        }
+                    }
+                });
+                showNotification('Group stage fixtures generated!', 'success');
+            }
+
+            generateKnockoutFixtures();
+            displayFixtures();
+            saveTournament();
+        }
+
+        function generateKnockoutFixtures() {
+            const groupMatches = tournament.matches.filter(match => match.stage === 'group');
+            const completedGroupMatches = groupMatches.filter(match => match.completed);
+            
+            if (groupMatches.length === 0 || completedGroupMatches.length < groupMatches.length) {
+                return;
+            }
+
+            const qualifiedTeams = [];
+            Object.keys(tournament.groups).forEach(groupName => {
+                const teams = tournament.groups[groupName]
+                    .sort((a, b) => {
+                        if (b.wins !== a.wins) return b.wins - a.wins;
+                        return b.average - a.average;
+                    });
+                
+                if (teams.length >= 2) {
+                    qualifiedTeams.push({...teams[0], group: groupName, position: 1});
+                    qualifiedTeams.push({...teams[1], group: groupName, position: 2});
+                }
+            });
+
+            if (qualifiedTeams.length < 4) return;
+
+            const existingSemis = tournament.matches.filter(match => match.stage === 'semi-final');
+            if (existingSemis.length === 0 && qualifiedTeams.length >= 4) {
+                let matchId = tournament.matches.length + 1;
+                
+                const groupA1st = qualifiedTeams.find(t => t.group === 'A' && t.position === 1);
+                const groupB2nd = qualifiedTeams.find(t => t.group === 'B' && t.position === 2);
+                const groupB1st = qualifiedTeams.find(t => t.group === 'B' && t.position === 1);
+                const groupA2nd = qualifiedTeams.find(t => t.group === 'A' && t.position === 2);
+
+                tournament.matches.push({
+                    id: matchId++,
+                    team1: groupA1st?.name || 'TBD',
+                    team2: groupB2nd?.name || 'TBD',
+                    group: null,
+                    stage: 'semi-final',
+                    team1Score: null,
+                    team2Score: null,
+                    completed: false,
+                    winner: null,
+                    matchName: 'Semi-Final 1 (Group A 1st vs Group B 2nd)'
+                });
+
+                tournament.matches.push({
+                    id: matchId++,
+                    team1: groupB1st?.name || 'TBD',
+                    team2: groupA2nd?.name || 'TBD',
+                    group: null,
+                    stage: 'semi-final',
+                    team1Score: null,
+                    team2Score: null,
+                    completed: false,
+                    winner: null,
+                    matchName: 'Semi-Final 2 (Group B 1st vs Group A 2nd)'
+                });
+
+                showNotification('Semi-finals generated with proper seeding!', 'success');
+            }
+
+            const semiMatches = tournament.matches.filter(match => match.stage === 'semi-final');
+            const completedSemis = semiMatches.filter(match => match.completed);
+            
+            if (semiMatches.length === 2 && completedSemis.length === 2) {
+                const existingFinal = tournament.matches.filter(match => match.stage === 'final');
+                if (existingFinal.length === 0) {
+                    let matchId = tournament.matches.length + 1;
+                    
+                    tournament.matches.push({
+                        id: matchId++,
+                        team1: completedSemis[0].winner,
+                        team2: completedSemis[1].winner,
+                        group: null,
+                        stage: 'final',
+                        team1Score: null,
+                        team2Score: null,
+                        completed: false,
+                        winner: null,
+                        matchName: 'Final'
+                    });
+
+                    showNotification('Final match generated!', 'success');
+                }
+            }
+        }
+
+        function displayFixtures() {
+            const display = document.getElementById('fixturesDisplay');
+            display.innerHTML = '';
+
+            Object.keys(tournament.groups).forEach(groupName => {
+                if (tournament.groups[groupName].length === 0) return;
+
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-section';
+                
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'group-title';
+                groupTitle.textContent = `Group ${groupName} Fixtures`;
+                groupDiv.appendChild(groupTitle);
+
+                const groupMatches = tournament.matches.filter(match => match.group === groupName && match.stage === 'group');
+                
+                groupMatches.forEach(match => {
+                    const matchCard = document.createElement('div');
+                    matchCard.className = 'match-card';
+                    
+                    const status = match.completed ? 
+                        `<span class="winner-highlight">Winner: ${match.winner} (${match.team1Score}-${match.team2Score})</span>` : 
+                        '<span style="color: #ff6b6b;">Pending</span>';
+                    
+                    matchCard.innerHTML = `
+                        <div class="match-header">
+                            <h4>Match ${match.id}</h4>
+                            <div>${status}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: center;">
+                            <strong>${match.team1}</strong>
+                            <span class="vs-text">VS</span>
+                            <strong>${match.team2}</strong>
+                        </div>
+                    `;
+                    
+                    groupDiv.appendChild(matchCard);
+                });
+
+                display.appendChild(groupDiv);
+            });
+
+            const knockoutStages = ['semi-final', 'final'];
+            const stageNames = {'semi-final': 'Semi-Finals', 'final': 'Final'};
+
+            knockoutStages.forEach(stage => {
+                const stageMatches = tournament.matches.filter(match => match.stage === stage);
+                if (stageMatches.length > 0) {
+                    const stageDiv = document.createElement('div');
+                    stageDiv.className = 'group-section';
+                    
+                    const stageTitle = document.createElement('div');
+                    stageTitle.className = stage === 'final' ? 'group-title final-title' : 'group-title knockout-title';
+                    stageTitle.textContent = stageNames[stage];
+                    stageDiv.appendChild(stageTitle);
+
+                    stageMatches.forEach(match => {
+                        const matchCard = document.createElement('div');
+                        matchCard.className = 'match-card';
+                        matchCard.style.borderLeft = stage === 'final' ? '5px solid #fbbf24' : '5px solid #dc2626';
+                        
+                        const status = match.completed ? 
+                            `<span class="winner-highlight">Winner: ${match.winner} (${match.team1Score}-${match.team2Score})</span>` : 
+                            '<span style="color: #ff6b6b;">Pending</span>';
+                        
+                        matchCard.innerHTML = `
+                            <div class="match-header">
+                                <h4>${match.matchName || `Match ${match.id}`}</h4>
+                                <div>${status}</div>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: center;">
+                                <strong>${match.team1}</strong>
+                                <span class="vs-text">VS</span>
+                                <strong>${match.team2}</strong>
+                            </div>
+                        `;
+                        
+                        stageDiv.appendChild(matchCard);
+                    });
+
+                    display.appendChild(stageDiv);
+                }
+            });
+
+            if (tournament.matches.length > 0) {
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = 'group-section';
+                
+                const groupMatches = tournament.matches.filter(match => match.stage === 'group');
+                const completedGroupMatches = groupMatches.filter(match => match.completed);
+                const semiMatches = tournament.matches.filter(match => match.stage === 'semi-final');
+                const finalMatches = tournament.matches.filter(match => match.stage === 'final');
+                
+                let progressText = '';
+                if (completedGroupMatches.length < groupMatches.length) {
+                    progressText = `Group Stage: ${completedGroupMatches.length}/${groupMatches.length} matches completed`;
+                } else if (semiMatches.length === 0) {
+                    progressText = 'Group Stage Complete - Semi-finals will be generated automatically';
+                } else if (semiMatches.some(m => !m.completed)) {
+                    progressText = 'Semi-finals in progress';
+                } else if (finalMatches.length === 0) {
+                    progressText = 'Semi-finals Complete - Final will be generated automatically';
+                } else if (!finalMatches[0].completed) {
+                    progressText = 'Final match ready!';
+                } else {
+                    progressText = `🏆 Tournament Complete! Champion: ${finalMatches[0].winner}`;
+                }
+                
+                summaryDiv.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #dc2626; padding: 20px; border-radius: 15px; text-align: center; font-size: 1.2em; font-weight: bold;">
+                        ${progressText}
+                    </div>
+                `;
+                
+                display.appendChild(summaryDiv);
+            }
+        }
+
+        function displayMatchesForUpdate() {
+            const display = document.getElementById('matchesForUpdate');
+            display.innerHTML = '';
+
+            const pendingMatches = tournament.matches.filter(match => !match.completed);
+            
+            if (pendingMatches.length === 0) {
+                const finalMatch = tournament.matches.find(match => match.stage === 'final' && match.completed);
+                
+                if (finalMatch) {
+                    display.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <h2 style="color: #dc2626; margin-bottom: 20px;">🏆 Tournament Complete!</h2>
+                            <div style="background: linear-gradient(135deg, #dc2626 0%, #fbbf24 100%); color: white; padding: 30px; border-radius: 20px; font-size: 1.3em;">
+                                <strong>Champion: ${finalMatch.winner}</strong><br>
+                                Final Score: ${finalMatch.team1Score} - ${finalMatch.team2Score}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    display.innerHTML = '<p style="text-align: center; font-size: 1.2em; color: #666;">No pending matches. Check fixtures for tournament progress.</p>';
+                }
+                
+                updateProgressTree();
+                return;
+            }
+
+            const groupMatches = pendingMatches.filter(match => match.stage === 'group');
+            const semiMatches = pendingMatches.filter(match => match.stage === 'semi-final');
+            const finalMatches = pendingMatches.filter(match => match.stage === 'final');
+
+            if (groupMatches.length > 0) {
+                const groupSection = document.createElement('div');
+                groupSection.innerHTML = '<h3 style="color: #dc2626; margin-bottom: 20px;">Group Stage Matches</h3>';
+                
+                groupMatches.forEach(match => {
+                    const matchCard = createMatchUpdateCard(match);
+                    groupSection.appendChild(matchCard);
+                });
+                
+                display.appendChild(groupSection);
+            }
+
+            if (semiMatches.length > 0) {
+                const semiSection = document.createElement('div');
+                semiSection.innerHTML = '<h3 style="color: #fbbf24; margin-bottom: 20px;">Semi-Finals</h3>';
+                
+                semiMatches.forEach(match => {
+                    const matchCard = createMatchUpdateCard(match);
+                    matchCard.style.borderLeft = '5px solid #fbbf24';
+                    semiSection.appendChild(matchCard);
+                });
+                
+                display.appendChild(semiSection);
+            }
+
+            if (finalMatches.length > 0) {
+                const finalSection = document.createElement('div');
+                finalSection.innerHTML = '<h3 style="color: #dc2626; margin-bottom: 20px;">🏆 FINAL</h3>';
+                
+                finalMatches.forEach(match => {
+                    const matchCard = createMatchUpdateCard(match);
+                    matchCard.style.borderLeft = '5px solid #dc2626';
+                    matchCard.style.background = 'linear-gradient(135deg, #fef3c7 0%, #fcd34d 30%)';
+                    finalSection.appendChild(matchCard);
+                });
+                
+                display.appendChild(finalSection);
+            }
+
+            updateProgressTree();
+        }
+
+        function createMatchUpdateCard(match) {
+            const matchCard = document.createElement('div');
+            matchCard.className = 'match-card';
+            
+            const stageText = match.stage === 'group' ? ` - Group ${match.group}` : 
+                            match.stage === 'semi-final' ? ' - Semi-Final' : 
+                            match.stage === 'final' ? ' - FINAL' : '';
+            
+            matchCard.innerHTML = `
+                <div class="match-header">
+                    <h4>${match.matchName || `Match ${match.id}`}${stageText}</h4>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0;">
+                    <div style="text-align: center;">
+                        <strong>${match.team1}</strong>
+                        <br>
+                        <input type="number" class="score-input" id="team1Score${match.id}" placeholder="Score" min="0">
+                    </div>
+                    <span class="vs-text">VS</span>
+                    <div style="text-align: center;">
+                        <strong>${match.team2}</strong>
+                        <br>
+                        <input type="number" class="score-input" id="team2Score${match.id}" placeholder="Score" min="0">
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button class="btn btn-success" onclick="updateMatchResult(${match.id})">Update Result</button>
+                </div>
+            `;
+            
+            return matchCard;
+        }
+
+        function updateMatchResult(matchId) {
+            const team1Score = parseInt(document.getElementById(`team1Score${matchId}`).value);
+            const team2Score = parseInt(document.getElementById(`team2Score${matchId}`).value);
+
+            if (isNaN(team1Score) || isNaN(team2Score)) {
+                showNotification('Please enter valid scores', 'error');
+                return;
+            }
+
+            const match = tournament.matches.find(m => m.id === matchId);
+            if (!match) return;
+
+            match.team1Score = team1Score;
+            match.team2Score = team2Score;
+            match.completed = true;
+            match.winner = team1Score > team2Score ? match.team1 : match.team2;
+
+            if (match.stage === 'group') {
+                const team1 = tournament.teams.find(t => t.name === match.team1);
+                const team2 = tournament.teams.find(t => t.name === match.team2);
+
+                if (team1) {
+                    team1.matches++;
+                    team1.pointsFor += team1Score;
+                    team1.pointsAgainst += team2Score;
+                    if (team1Score > team2Score) team1.wins++;
+                    team1.average = team1.pointsAgainst > 0 ? team1.pointsFor / team1.pointsAgainst : 0;
+                }
+
+                if (team2) {
+                    team2.matches++;
+                    team2.pointsFor += team2Score;
+                    team2.pointsAgainst += team1Score;
+                    if (team2Score > team1Score) team2.wins++;
+                    team2.average = team2.pointsAgainst > 0 ? team2.pointsFor / team2.pointsAgainst : 0;
+                }
+            }
+
+            generateKnockoutFixtures();
+            displayMatchesForUpdate();
+            displayFixtures();
+            saveTournament();
+            
+            let message = `Match result updated: ${match.winner} wins!`;
+            if (match.stage === 'final') {
+                message = `🏆 Tournament Complete! Champion: ${match.winner}!`;
+            } else if (match.stage === 'semi-final') {
+                message = `Semi-final complete: ${match.winner} advances to final!`;
+            }
+            
+            showNotification(message, 'success');
+        }
+
+        function updateProgressTree() {
+            const treeDisplay = document.getElementById('progressTree');
+            const treeContent = document.getElementById('treeContent');
+            
+            if (tournament.matches.length === 0) {
+                treeDisplay.style.display = 'none';
+                return;
+            }
+
+            treeDisplay.style.display = 'block';
+            treeContent.innerHTML = '';
+
+            const groupATeams = getTopTeamsFromGroup('A');
+            const groupBTeams = getTopTeamsFromGroup('B');
+
+            if (groupATeams.length >= 2 && groupBTeams.length >= 2) {
+                const groupLevel = document.createElement('div');
+                groupLevel.className = 'tree-level';
+                groupLevel.innerHTML = `
+                    <div style="text-align: center; width: 100%; margin-bottom: 20px;">
+                        <h4 style="color: #dc2626;">Group Stage Qualifiers</h4>
+                    </div>
+                `;
+                
+                const groupASection = document.createElement('div');
+                groupASection.innerHTML = `
+                    <div style="text-align: center; margin: 10px;">
+                        <strong>Group A</strong>
+                        <div class="tree-team tree-winner">1st: ${groupATeams[0]?.name || 'TBD'}</div>
+                        <div class="tree-team">2nd: ${groupATeams[1]?.name || 'TBD'}</div>
+                    </div>
+                `;
+                
+                const groupBSection = document.createElement('div');
+                groupBSection.innerHTML = `
+                    <div style="text-align: center; margin: 10px;">
+                        <strong>Group B</strong>
+                        <div class="tree-team tree-winner">1st: ${groupBTeams[0]?.name || 'TBD'}</div>
+                        <div class="tree-team">2nd: ${groupBTeams[1]?.name || 'TBD'}</div>
+                    </div>
+                `;
+                
+                groupLevel.appendChild(groupASection);
+                groupLevel.appendChild(groupBSection);
+                treeContent.appendChild(groupLevel);
+
+                const semiMatches = tournament.matches.filter(match => match.stage === 'semi-final');
+                if (semiMatches.length > 0) {
+                    const semiLevel = document.createElement('div');
+                    semiLevel.className = 'tree-level';
+                    semiLevel.innerHTML = `
+                        <div style="text-align: center; width: 100%; margin: 20px 0;">
+                            <h4 style="color: #fbbf24;">Semi-Finals</h4>
+                        </div>
+                    `;
+                    
+                    semiMatches.forEach(match => {
+                        const semiDiv = document.createElement('div');
+                        semiDiv.innerHTML = `
+                            <div class="tree-team ${match.completed ? 'tree-winner' : ''}">
+                                ${match.completed ? match.winner : `${match.team1} vs ${match.team2}`}
+                            </div>
+                        `;
+                        semiLevel.appendChild(semiDiv);
+                    });
+                    
+                    treeContent.appendChild(semiLevel);
+
+                    const finalMatch = tournament.matches.find(match => match.stage === 'final');
+                    if (finalMatch) {
+                        const finalLevel = document.createElement('div');
+                        finalLevel.className = 'tree-level';
+                        finalLevel.innerHTML = `
+                            <div style="text-align: center; width: 100%; margin: 20px 0;">
+                                <h4 style="color: #dc2626;">Final</h4>
+                            </div>
+                        `;
+                        
+                        const finalDiv = document.createElement('div');
+                        finalDiv.innerHTML = `
+                            <div class="tree-team ${finalMatch.completed ? 'tree-champion' : 'tree-winner'}">
+                                ${finalMatch.completed ? `🏆 ${finalMatch.winner}` : `${finalMatch.team1} vs ${finalMatch.team2}`}
+                            </div>
+                        `;
+                        finalLevel.appendChild(finalDiv);
+                        treeContent.appendChild(finalLevel);
+                    }
+                }
+            }
+        }
+
+        function getTopTeamsFromGroup(groupName) {
+            if (!tournament.groups[groupName]) return [];
+            
+            return tournament.groups[groupName]
+                .sort((a, b) => {
+                    if (b.wins !== a.wins) return b.wins - a.wins;
+                    return b.average - a.average;
+                });
+        }
+
+        function updateStandings() {
+            const display = document.getElementById('standingsDisplay');
+            display.innerHTML = '';
+
+            Object.keys(tournament.groups).forEach(groupName => {
+                if (tournament.groups[groupName].length === 0) return;
+
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-section';
+                
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'group-title';
+                groupTitle.textContent = `Group ${groupName} Standings`;
+                groupDiv.appendChild(groupTitle);
+
+                const teams = tournament.groups[groupName]
+                    .sort((a, b) => {
+                        if (b.wins !== a.wins) return b.wins - a.wins;
+                        return b.average - a.average;
+                    });
+
+                const table = document.createElement('table');
+                table.className = 'standings-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Matches</th>
+                            <th>Wins</th>
+                            <th>Points For</th>
+                            <th>Points Against</th>
+                            <th>Average</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${teams.map((team, index) => {
+                            let status = '';
+                            if (index < 2) {
+                                status = index === 0 ? '🥇 Qualified' : '🥈 Qualified';
+                            } else {
+                                status = '❌ Eliminated';
+                            }
+                            return `
+                                <tr style="background: ${index < 2 ? '#d1fae5' : '#fee2e2'};">
+                                    <td><strong>${index + 1}</strong></td>
+                                    <td><strong>${team.name}</strong></td>
+                                    <td>${team.matches}</td>
+                                    <td>${team.wins}</td>
+                                    <td>${team.pointsFor}</td>
+                                    <td>${team.pointsAgainst}</td>
+                                    <td>${team.average.toFixed(3)}</td>
+                                    <td><strong>${status}</strong></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                `;
+
+                groupDiv.appendChild(table);
+                display.appendChild(groupDiv);
+            });
+
+            const semiMatches = tournament.matches.filter(match => match.stage === 'semi-final');
+            const finalMatch = tournament.matches.find(match => match.stage === 'final');
+            
+            if (semiMatches.length > 0 || finalMatch) {
+                const knockoutDiv = document.createElement('div');
+                knockoutDiv.className = 'group-section';
+                
+                const knockoutTitle = document.createElement('div');
+                knockoutTitle.className = 'group-title knockout-title';
+                knockoutTitle.textContent = 'Knockout Stage Results';
+                knockoutDiv.appendChild(knockoutTitle);
+
+                const table = document.createElement('table');
+                table.className = 'standings-table knockout-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Stage</th>
+                            <th>Match</th>
+                            <th>Result</th>
+                            <th>Winner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${semiMatches.map(match => `
+                            <tr>
+                                <td><strong>Semi-Final</strong></td>
+                                <td>${match.team1} vs ${match.team2}</td>
+                                <td>${match.completed ? `${match.team1Score}-${match.team2Score}` : 'Pending'}</td>
+                                <td>${match.completed ? `🏆 ${match.winner}` : 'TBD'}</td>
+                            </tr>
+                        `).join('')}
+                        ${finalMatch ? `
+                            <tr style="background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);">
+                                <td><strong>🏆 FINAL</strong></td>
+                                <td>${finalMatch.team1} vs ${finalMatch.team2}</td>
+                                <td>${finalMatch.completed ? `${finalMatch.team1Score}-${finalMatch.team2Score}` : 'Pending'}</td>
+                                <td>${finalMatch.completed ? `👑 ${finalMatch.winner}` : 'TBD'}</td>
+                            </tr>
+                        ` : ''}
+                    </tbody>
+                `;
+
+                knockoutDiv.appendChild(table);
+                display.appendChild(knockoutDiv);
+            }
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalTeams').textContent = tournament.teams.length;
+            document.getElementById('totalMatches').textContent = tournament.matches.length;
+            document.getElementById('completedMatches').textContent = tournament.matches.filter(m => m.completed).length;
+            document.getElementById('pendingMatches').textContent = tournament.matches.filter(m => !m.completed).length;
+
+            updateWinnerTreeMap();
+
+            const content = document.getElementById('dashboardContent');
+            content.innerHTML = `
+                <div class="group-section">
+                    <h3>🏸 Tournament Information</h3>
+                    <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <p><strong>🏆 Tournament Name:</strong> ${tournament.name || 'Not set'}</p>
+                        <p><strong>🎯 Tournament Type:</strong> ${tournament.type}</p>
+                        <p><strong>👥 Number of Groups:</strong> ${Object.keys(tournament.groups).length}</p>
+                        <p><strong>📊 Completion:</strong> ${tournament.matches.length > 0 ? 
+                            Math.round((tournament.matches.filter(m => m.completed).length / tournament.matches.length) * 100) : 0}%</p>
+                        ${tournament.matches.find(m => m.stage === 'final' && m.completed) ? 
+                            `<p><strong>🥇 Champion:</strong> ${tournament.matches.find(m => m.stage === 'final' && m.completed).winner}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateWinnerTreeMap() {
+            const treeContent = document.getElementById('winnerTreeContent');
+            
+            if (tournament.matches.length === 0) {
+                treeContent.innerHTML = '<p style="color: #666; font-style: italic;">🎯 No tournament data available yet</p>';
+                return;
+            }
+
+            const finalMatch = tournament.matches.find(m => m.stage === 'final');
+            const semiMatches = tournament.matches.filter(m => m.stage === 'semi-final');
+            const groupAWinner = getTopTeamsFromGroup('A')[0];
+            const groupBWinner = getTopTeamsFromGroup('B')[0];
+
+            let content = '<div class="winner-path">';
+
+            // Group Winners
+            if (groupAWinner || groupBWinner) {
+                content += `
+                    <div class="winner-stage">
+                        <h4 style="color: #dc2626; margin-bottom: 10px;">🏆 Group Winners</h4>
+                    </div>
+                    <div class="winner-stage">
+                        ${groupAWinner ? `<div class="winner-team semifinalist">🥇 Group A: ${groupAWinner.name}</div>` : '<div class="winner-team">Group A: TBD</div>'}
+                        ${groupBWinner ? `<div class="winner-team semifinalist">🥇 Group B: ${groupBWinner.name}</div>` : '<div class="winner-team">Group B: TBD</div>'}
+                    </div>
+                `;
+            }
+
+            // Semi-finalists
+            if (semiMatches.length > 0 && semiMatches.some(m => m.completed)) {
+                content += `
+                    <div class="stage-arrow">⬇️</div>
+                    <div class="winner-stage">
+                        <h4 style="color: #fbbf24; margin-bottom: 10px;">🥈 Semi-Final Winners</h4>
+                    </div>
+                    <div class="winner-stage">
+                `;
+                
+                semiMatches.forEach(match => {
+                    if (match.completed) {
+                        content += `<div class="winner-team finalist">🏆 ${match.winner}</div>`;
+                    }
+                });
+                
+                content += '</div>';
+            }
+
+            // Final Winner
+            if (finalMatch && finalMatch.completed) {
+                content += `
+                    <div class="stage-arrow">⬇️</div>
+                    <div class="winner-stage">
+                        <h4 style="color: #dc2626; margin-bottom: 10px;">🏆 Tournament Champion</h4>
+                    </div>
+                    <div class="winner-stage">
+                        <div class="winner-team champion">👑 ${finalMatch.winner} 👑</div>
+                    </div>
+                    <div style="margin-top: 20px; font-size: 1.1em; color: #dc2626;">
+                        <strong>🎉 Final Score: ${finalMatch.team1Score} - ${finalMatch.team2Score} 🎉</strong>
+                    </div>
+                `;
+            } else if (finalMatch) {
+                content += `
+                    <div class="stage-arrow">⬇️</div>
+                    <div class="winner-stage">
+                        <h4 style="color: #dc2626; margin-bottom: 10px;">🏆 Final Match</h4>
+                    </div>
+                    <div class="winner-stage">
+                        <div class="winner-team finalist">${finalMatch.team1} 🆚 ${finalMatch.team2}</div>
+                    </div>
+                    <div style="margin-top: 20px; color: #fbbf24;">
+                        <strong>⏳ Final match pending...</strong>
+                    </div>
+                `;
+            }
+
+            content += '</div>';
+
+            if (content === '<div class="winner-path"></div>') {
+                content = '<p style="color: #666; font-style: italic;">🏸 Tournament in progress... Winners will appear here!</p>';
+            }
+
+            treeContent.innerHTML = content;
+        }
+
+        function updateCharts() {
+            // Charts removed - replaced with winner tree map
+            updateWinnerTreeMap();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        window.addEventListener('load', () => {
+            loadTournament();
+            updateDashboard();
+            
+            if (tournament.isAdmin) {
+                document.getElementById('adminControls').classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>
